@@ -18,9 +18,28 @@ model Game {
   createdAt    DateTime   @default(now())
   result       Result
   pgn          String
-  fen          String
   modelVersion String
   status       GameStatus @default(fresh)
+
+  moves Move[]
+}
+
+model Move {
+  id     String @id @default(uuid())
+  gameId String
+  game   Game   @relation(fields: [gameId], references: [id])
+
+  moveIndex Int
+  fen       String
+  moveUci   String
+
+  player Player
+  reward Float? // Filled after game ends
+}
+
+enum Player {
+  white
+  black
 }
 
 enum Result {
