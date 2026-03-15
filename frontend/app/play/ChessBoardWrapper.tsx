@@ -286,44 +286,64 @@ export function ChessBoardWrapper({ initialFen }: ChessBoardWrapperProps) {
         id: 'click-or-drag-to-move'
     };
 
+    // Premium colors for the board
+    const boardStyles = {
+        customDarkSquareStyle: { backgroundColor: "#334155" }, // slate-700
+        customLightSquareStyle: { backgroundColor: "#94a3b8" }, // slate-400
+        animationDuration: 300,
+    };
+
     return (
-        <div className="flex flex-col items-center gap-4">
+        <div className="relative w-full aspect-square flex flex-col items-center">
             <Chessboard
                 options={chessboardOptions}
+                {...boardStyles}
             />
             {gameOver.isOver && (
-                <div className="w-full max-w-2xl mt-4 p-6 rounded-lg border-2 text-center bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900">
-                    <h2 className="text-2xl font-bold mb-2">
-                        {gameOver.result === "win" && "🎉 Victory!"}
-                        {gameOver.result === "loss" && "😔 Defeat"}
-                        {gameOver.result === "draw" && "🤝 Draw"}
-                    </h2>
-                    <p className="text-lg mb-3 text-slate-700 dark:text-slate-300">
-                        {gameOver.reason}
-                    </p>
+                <div className="absolute inset-0 z-50 flex items-center justify-center p-4">
+                    {/* Backdrop */}
+                    <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm rounded-lg" />
 
-                    {isSaving ? (
-                        <p className="text-sm text-blue-600 dark:text-blue-400 mb-3">
-                            💾 Saving game to database...
-                        </p>
-                    ) : (
-                        <p className="text-sm text-green-600 dark:text-green-400 mb-3">
-                            ✅ Game saved successfully!
-                        </p>
-                    )}
+                    {/* Modal */}
+                    <div className="relative z-10 w-full max-w-sm p-8 rounded-2xl bg-slate-900 border border-slate-700 shadow-2xl flex flex-col items-center text-center">
+                        <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mb-4 border border-slate-700 shadow-inner">
+                            <span className="text-3xl">
+                                {gameOver.result === "win" && "👑"}
+                                {gameOver.result === "loss" && "💀"}
+                                {gameOver.result === "draw" && "🤝"}
+                            </span>
+                        </div>
 
-                    <div className="mt-4 p-3 bg-white dark:bg-slate-700 rounded border border-slate-200 dark:border-slate-600">
-                        <p className="text-xs font-mono text-left overflow-x-auto whitespace-pre-wrap break-all">
-                            <strong>PGN:</strong> {chessGame.pgn()}
+                        <h2 className="text-2xl font-bold mb-1 text-slate-100">
+                            {gameOver.result === "win" && "Victory"}
+                            {gameOver.result === "loss" && "Defeat"}
+                            {gameOver.result === "draw" && "Draw"}
+                        </h2>
+
+                        <p className="text-sm text-slate-400 mb-6">
+                            {gameOver.reason}
                         </p>
+
+                        <div className="w-full bg-slate-800/50 rounded-lg p-3 mb-6 border border-slate-700/50">
+                            {isSaving ? (
+                                <p className="text-xs text-indigo-400 flex items-center justify-center gap-2">
+                                    <span className="w-3 h-3 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                                    Synchronizing Match...
+                                </p>
+                            ) : (
+                                <p className="text-xs text-emerald-400 font-medium">
+                                    Match Saved to History
+                                </p>
+                            )}
+                        </div>
+
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] active:scale-95"
+                        >
+                            Play Again
+                        </button>
                     </div>
-
-                    <button
-                        onClick={() => window.location.reload()}
-                        className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-                    >
-                        New Game
-                    </button>
                 </div>
             )}
         </div>

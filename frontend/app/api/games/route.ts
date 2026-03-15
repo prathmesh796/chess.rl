@@ -9,7 +9,6 @@ export async function POST(req: Request) {
     data: {
       result: body.result,
       pgn: body.pgn,
-      fen: body.fen,
       modelVersion: body.modelVersion,
       status: body.status,
     },

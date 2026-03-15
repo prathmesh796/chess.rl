@@ -4,10 +4,13 @@ import requests
 
 API_URL = "http://localhost:3000/api/selfplay"
 
-def create_game(model_version):
+def create_game(model_version, result):
     res = requests.post(API_URL, json={
         "type": "create_game",
-        "payload": { "modelVersion": model_version }
+        "payload": { 
+            "modelVersion": model_version,
+            "result": result
+        }
     })
     return res.json()["gameId"]
 
@@ -24,12 +27,8 @@ def insert_move(game_id, move_index, fen, move_uci, player):
         }
     })
 
-
-def update_rewards(game_id, winner):
+def insert_bulk_moves(moves_buffer):
     requests.post(API_URL, json={
-        "type": "update_rewards",
-        "payload": {
-            "gameId": game_id,
-            "winner": winner
-        }
+        "type": "insert_bulk_move",
+        "payload": moves_buffer
     })

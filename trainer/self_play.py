@@ -1,48 +1,67 @@
-# trainer/self_play.py
-
 import chess
 import random
+import json
+import os
 from tqdm import tqdm
-from db import create_game, insert_move, update_rewards
+from datetime import datetime
 
 NUM_GAMES = 1000
+MAX_MOVES = 80
 MODEL_VERSION = "v0"
 
-def play_game():
+def play_game(game_id):
     board = chess.Board()
-    game_id = create_game(MODEL_VERSION)
+    moves = []
 
     move_index = 0
 
-    while not board.is_game_over():
+    while not board.is_game_over() and move_index < MAX_MOVES:
         fen = board.fen()
         move = random.choice(list(board.legal_moves))
-
         player = "white" if board.turn else "black"
 
-        insert_move(
-            game_id,
-            move_index,
-            fen,
-            move.uci(),
-            player
-        )
+        moves.append({
+            "game_id": game_id,
+            "move_index": move_index,
+            "fen": fen,
+            "move": move.uci(),
+            "player": player
+        })
 
         board.push(move)
         move_index += 1
 
     result = board.result()
 
+    final_value = 0
+
     if result == "1-0":
-        update_rewards(game_id, "white")
+        final_value = 1
     elif result == "0-1":
-        update_rewards(game_id, "black")
-    else:
-        update_rewards(game_id, "draw")
+        final_value = -1
+
+    for move in moves:
+        move["reward"] = final_value
+
+    return {
+        "game_id": game_id,
+        "model_version": MODEL_VERSION,
+        "result": result,
+        "moves": moves
+    }
 
 
 if __name__ == "__main__":
-    for _ in tqdm(range(NUM_GAMES)):
-        play_game()
+    all_games = []
 
-    print("Self-play generation complete.")
+    for game_num in tqdm(range(NUM_GAMES)):
+        game_data = play_game(game_num)
+        all_games.append(game_data)
+
+    filename = f"self_play_{MODEL_VERSION}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    filepath = os.path.join(os.path.dirname(__file__), "data", filename)
+
+    with open(filepath, "w") as f:
+        json.dump(all_games, f)
+
+    print(f"Saved {NUM_GAMES} games to {filepath}")
