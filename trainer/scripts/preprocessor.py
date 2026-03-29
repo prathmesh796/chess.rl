@@ -1,11 +1,15 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 import json
 import torch
-import os
-from utils import board_to_tensor
+from utils.utils import board_to_tensor
 
 
 def preprocess_and_save():
-    with open(os.path.join(os.path.dirname(__file__), "data", "training_data.json"), "r") as f:
+    BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+    with open(os.path.join(BASE_DIR, "data", "training_data.json"), "r") as f:
         rows = json.load(f)
 
     processed_data = []
@@ -25,7 +29,7 @@ def preprocess_and_save():
             )
         )
 
-    torch.save(processed_data, os.path.join(os.path.dirname(__file__), "data", "dataset.pt"))
+    torch.save(processed_data, os.path.join(BASE_DIR, "data", "dataset.pt"))
     print(f"Saved {len(processed_data)} samples to dataset.pt")
 
 

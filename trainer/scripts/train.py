@@ -1,16 +1,21 @@
 import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from model import ChessNet
-from dataset import ChessDataset
+from network.model import ChessNet
+from data_loader.dataset import ChessDataset
+
 
 device = torch.device("cpu")
 
 def train():
     print("Loading dataset...")
-    data = torch.load(os.path.join(os.path.dirname(__file__), "data", "dataset.pt"))
+    BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+    data = torch.load(os.path.join(BASE_DIR, "data", "dataset.pt"))
 
     dataset = ChessDataset(data)
     loader = DataLoader(dataset, batch_size=32, shuffle=True)
@@ -46,7 +51,7 @@ def train():
 
         print(f"Epoch {epoch+1} | Loss: {total_loss:.4f}")
 
-    torch.save(model.state_dict(), os.path.join(os.path.dirname(__file__), "models", "model_v1.pt"))
+    torch.save(model.state_dict(), os.path.join(BASE_DIR, "models", "model_v1.pt"))
     print("Model saved as model_v1.pt")
 
 

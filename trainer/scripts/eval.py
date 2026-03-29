@@ -1,10 +1,13 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 import torch
 import chess
 import random
-import os
-from model import ChessNet
-from utils import board_to_tensor
-from move_encoding import index_to_move
+from network.model import ChessNet
+from utils.utils import board_to_tensor
+from utils.move_encoding import index_to_move
 
 device = torch.device("cpu")
 
@@ -46,7 +49,8 @@ def play_game(model):
 
 def evaluate():
     model = ChessNet()
-    model.load_state_dict(torch.load(os.path.join(os.path.dirname(__file__), "models", "model_v1.pt"), map_location=device))
+    BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+    model.load_state_dict(torch.load(os.path.join(BASE_DIR, "models", "model_v1.pt"), map_location=device))
     model.to(device)
 
     wins = 0

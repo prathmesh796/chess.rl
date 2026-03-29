@@ -1,7 +1,10 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 import chess
 import random
 import json
-import os
 from tqdm import tqdm
 from datetime import datetime
 
@@ -59,7 +62,8 @@ if __name__ == "__main__":
         all_games.append(game_data)
 
     filename = f"self_play_{MODEL_VERSION}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-    filepath = os.path.join(os.path.dirname(__file__), "data", filename)
+    BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+    filepath = os.path.join(BASE_DIR, "data", filename)
 
     with open(filepath, "w") as f:
         json.dump(all_games, f)

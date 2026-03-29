@@ -1,10 +1,14 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 import json
 from tqdm import tqdm
-from db import create_game, insert_bulk_moves
-import os
+from database.db import create_game, insert_bulk_moves
 
 FILENAME = "self_play_v0_20260301_222146.json"
-FILEPATH = os.path.join(os.path.dirname(__file__), "data", FILENAME)
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+FILEPATH = os.path.join(BASE_DIR, "data", FILENAME)
 
 with open(FILEPATH, "r") as f:
     games = json.load(f)
