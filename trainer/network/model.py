@@ -38,3 +38,23 @@ class ChessNet(nn.Module):
         v = torch.tanh(self.value_fc2(v))
 
         return p, v
+
+class DQNAgent:
+    def __init__(self):
+        self.model = ChessNet()
+        self.model.load_state_dict(torch.load("model_v1.pt"))
+        self.model.eval()
+        self.epsilon = 0.1
+
+    def select_move(self, board):
+        if random.random() < self.epsilon:
+            return random.choice(list(board.legal_moves))
+        else:
+            policy_logits, _ = self.model(board_to_tensor(board.fen()).unsqueeze(0))
+            policy = torch.softmax(policy_logits, dim=1).squeeze()
+            sorted_indices = torch.argsort(policy, descending=True)
+            for index in sorted_indices:
+                move = index_to_move(index.item(), board)
+                if move is not None:
+                    return move
+            return random.choice(list(board.legal_moves))

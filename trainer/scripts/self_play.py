@@ -20,7 +20,11 @@ def play_game(game_id):
 
     while not board.is_game_over() and move_index < MAX_MOVES:
         fen = board.fen()
-        move = random.choice(list(board.legal_moves))
+
+        agent = DQNAgent()
+        agent.load_model("model_v1.pt")
+        agent.epsilon = 0.1
+        move = agent.select_move(board)
         player = "white" if board.turn else "black"
 
         moves.append({
